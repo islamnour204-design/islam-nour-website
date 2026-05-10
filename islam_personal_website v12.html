@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Islam & Nour</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#06060f;--bg2:#0c0c1a;
+  --accent:#b8962e;--accent2:#e8c96d;
+  --text:#f0ede8;--text2:#7a7060;
+  --card:rgba(184,150,46,0.06);--border:rgba(184,150,46,0.13);
+  --glow:rgba(184,150,46,0.22);
+}
+body.light{
+  --bg:#f8f4ee;--bg2:#f0ead8;
+  --accent:#c8702a;--accent2:#e8a045;
+  --text:#1a1208;--text2:#7a6040;
+  --card:rgba(200,112,42,0.06);--border:rgba(200,112,42,0.15);
+  --glow:rgba(200,112,42,0.22);
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;transition:background .8s,color .8s}
+::-webkit-scrollbar{width:2px}
+::-webkit-scrollbar-thumb{background:var(--accent)}
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#cDot{position:fixed;width:6px;height:6px;border-radius:50%;background:var(--accent2);transform:translate(-50%,-50%);pointer-events:none;z-index:9999;mix-blend-mode:difference}
+#cRing{position:fixed;width:24px;height:24px;border-radius:50%;border:1px solid var(--accent);transform:translate(-50%,-50%);pointer-events:none;z-index:9998;transition:width .3s,height .3s;opacity:.8}
+.progress-bar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:9999;width:0%;transition:width .1s linear}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:24px 70px;transition:all .5s}
+nav.scrolled{background:rgba(6,6,15,0.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:14px 70px}
+body.light nav.scrolled{background:rgba(248,244,238,0.88)}
+.nav-logo{font-size:20px;font-weight:900;letter-spacing:-0.5px}
+.logo-i{color:var(--text);transition:color .6s}
+.logo-a{color:var(--accent)}
+.logo-n{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:color .3s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--accent);transition:width .3s}
+.nav-links a:hover{color:var(--accent)}
+.nav-links a:hover::after{width:100%}
+.mode-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.toggle-pill{width:48px;height:24px;border-radius:12px;border:1px solid var(--accent);position:relative;transition:all .5s}
+.toggle-pill::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));transition:transform .4s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px var(--glow)}
+body.light .toggle-pill::after{transform:translateX(24px)}
+.mode-lbl{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);min-width:48px;text-align:right}
+.hero{position:relative;z-index:1;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;overflow:hidden}
+.hero-left{padding:140px 50px 100px 70px;position:relative;z-index:2}
+.hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:28px;opacity:0;animation:fadeUp .7s .2s forwards}
+.eyebrow-line{width:36px;height:1px;background:var(--accent)}
+.eyebrow-text{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent)}
+.hero-brand{opacity:0;animation:fadeUp .8s .3s forwards;margin-bottom:8px}
+.brand-big{display:block;font-size:clamp(60px,7vw,110px);font-weight:900;line-height:.95;letter-spacing:-5px}
+.brand-islam{color:var(--text);transition:color .6s}
+.brand-amp{color:var(--accent)}
+.brand-nour{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-tagline{font-size:clamp(15px,1.6vw,20px);font-weight:300;color:var(--text2);letter-spacing:1px;margin-bottom:28px;opacity:0;animation:fadeUp .8s .45s forwards;font-style:italic}
+.hero-tagline span{color:var(--accent);font-style:normal;font-weight:600}
+.hero-desc{font-size:15px;line-height:1.9;color:var(--text2);max-width:440px;margin-bottom:44px;opacity:0;animation:fadeUp .9s .6s forwards}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;opacity:0;animation:fadeUp .9s .75s forwards}
+.btn-gold{padding:13px 28px;border-radius:2px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06060f;font-weight:800;font-size:11px;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;text-decoration:none;display:inline-block;transition:transform .2s,box-shadow .2s;box-shadow:0 0 30px var(--glow)}
+.btn-gold:hover{transform:translateY(-3px);box-shadow:0 10px 40px var(--glow)}
+.btn-outline{padding:13px 28px;border-radius:2px;background:transparent;color:var(--accent);font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;border:1px solid var(--accent);cursor:pointer;text-decoration:none;display:inline-block;transition:all .3s}
+.btn-outline:hover{background:var(--accent);color:#06060f}
+.hero-right{position:relative;height:100vh;overflow:hidden}
+.photo-dark{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;transition:opacity .8s ease;filter:grayscale(20%) contrast(1.1)}
+.photo-light{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;opacity:0;transition:opacity .8s ease;filter:contrast(1.05) brightness(1.05) saturate(1.1)}
+body.light .photo-dark{opacity:0}
+body.light .photo-light{opacity:1}
+.hero-photo-mask{position:absolute;inset:0;background:linear-gradient(to right,var(--bg) 0%,transparent 25%,transparent 75%,var(--bg) 100%),linear-gradient(to bottom,var(--bg) 0%,transparent 12%,transparent 75%,var(--bg) 100%);pointer-events:none;z-index:1;transition:background .8s}
+.hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 80%,var(--glow) 0%,transparent 65%);z-index:2;pointer-events:none}
+.scroll-hint{position:absolute;bottom:40px;left:70px;display:flex;align-items:center;gap:12px;opacity:0;animation:fadeUp .8s 1.2s forwards;z-index:2}
+.scroll-line{width:44px;height:1px;background:linear-gradient(90deg,var(--accent),transparent);animation:scrollPulse 2s infinite}
+.scroll-txt{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--text2)}
+@keyframes scrollPulse{0%,100%{transform:scaleX(1);opacity:.4}50%{transform:scaleX(1.4);opacity:1}}
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;animation:orbFloat ease-in-out infinite}
+@keyframes orbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-28px)}}
+.marquee-wrap{position:relative;z-index:1;padding:32px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden}
+.marquee-track{display:flex;gap:56px;width:max-content;animation:marquee 22s linear infinite}
+.marquee-item{display:flex;align-items:center;gap:16px;white-space:nowrap;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--text2)}
+.marquee-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex-shrink:0}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+section{position:relative;z-index:1}
+.sec-label{font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.sec-label::before{content:'';width:24px;height:1px;background:var(--accent);display:inline-block}
+.sec-title{font-size:clamp(34px,3.5vw,54px);font-weight:900;letter-spacing:-2px;line-height:1.05;margin-bottom:20px}
+.sec-title em{font-family:'Playfair Display',serif;font-style:italic;font-weight:400;color:var(--accent)}
+.about-sec{padding:120px 70px;min-height:100vh;display:flex;align-items:center}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;width:100%}
+.about-img-wrap{position:relative}
+.about-img-frame{position:relative;height:520px;overflow:hidden;border-radius:1px}
+.about-img-frame img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .7s ease}
+.about-img-frame:hover img{transform:scale(1.04)}
+.about-frame-border{position:absolute;top:18px;right:-18px;bottom:-18px;left:18px;border:1px solid var(--accent);opacity:.25;pointer-events:none}
+.about-badge{position:absolute;bottom:24px;left:24px;padding:9px 18px;background:var(--bg);border:1px solid var(--border);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);backdrop-filter:blur(10px)}
+.about-body{font-size:15px;line-height:1.9;color:var(--text2);margin-bottom:36px}
+.about-body strong{color:var(--text)}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
+.stat-b{padding:18px 12px;border:1px solid var(--border);text-align:center;transition:border-color .3s,transform .3s;background:var(--card)}
+.stat-b:hover{border-color:var(--accent);transform:translateY(-4px)}
+.stat-n{font-size:28px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block}
+.stat-l{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text2);display:block;margin-top:4px}
+.course-sec{padding:100px 70px;background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.course-inner{display:grid;grid-template-columns:1.2fr 1fr;gap:80px;align-items:center}
+.course-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--accent);font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:20px}
+.badge-blink{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.course-title{font-size:clamp(38px,4vw,60px);font-weight:900;letter-spacing:-2px;line-height:1.05;margin-bottom:20px}
+.course-title em{font-family:'Playfair Display',serif;font-style:italic;font-weight:400;color:var(--accent)}
+.course-desc{font-size:15px;line-height:1.9;color:var(--text2);margin-bottom:36px}
+.course-features{display:flex;flex-direction:column;gap:14px;margin-bottom:40px}
+.cf-item{display:flex;align-items:center;gap:14px;font-size:13px;color:var(--text2)}
+.cf-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.cf-item strong{color:var(--text)}
+.course-card-3d{perspective:1000px}
+.course-card{width:100%;padding:48px 40px;border:1px solid var(--border);background:var(--bg);border-radius:2px;transform-style:preserve-3d;animation:floatCard 6s ease-in-out infinite;box-shadow:0 40px 80px rgba(0,0,0,.4),0 0 60px var(--glow)}
+@keyframes floatCard{0%,100%{transform:rotateY(-6deg) rotateX(3deg) translateY(0)}50%{transform:rotateY(6deg) rotateX(-3deg) translateY(-18px)}}
+.cc-icon{font-size:44px;margin-bottom:20px;display:block}
+.cc-title{font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-bottom:10px}
+.cc-sub{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:24px}
+.cc-modules{display:flex;flex-wrap:wrap;gap:8px}
+.mod-tag{padding:5px 12px;border:1px solid var(--border);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);transition:background .3s,color .3s}
+.mod-tag:hover{background:var(--accent);color:#06060f}
+.services-sec{padding:120px 70px}
+.svc-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:60px}
+.svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;background:var(--border)}
+.svc-card{background:var(--bg);padding:44px 38px;position:relative;overflow:hidden;transition:background .4s}
+body.light .svc-card{background:var(--bg2)}
+.svc-card::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(0);transition:transform .4s;transform-origin:left}
+.svc-card:hover::after{transform:scaleX(1)}
+.svc-num{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--accent);opacity:.4;margin-bottom:24px}
+.svc-icon{font-size:36px;margin-bottom:16px;display:block}
+.svc-t{font-size:20px;font-weight:800;letter-spacing:-0.5px;margin-bottom:10px}
+.svc-d{font-size:13px;color:var(--text2);line-height:1.8}
+.timeline-sec{padding:120px 70px}
+.tl-grid{display:grid;grid-template-columns:1fr 1px 1fr;gap:0 60px;margin-top:60px}
+.tl-line{background:linear-gradient(to bottom,transparent,var(--accent) 30%,var(--accent2) 70%,transparent);width:1px}
+.tl-col{display:flex;flex-direction:column;gap:44px}
+.tl-col-r{padding-top:60px}
+.tl-item{opacity:0;transform:translateX(-24px);transition:opacity .7s,transform .7s}
+.tl-item.from-r{transform:translateX(24px)}
+.tl-item.vis{opacity:1;transform:translateX(0)}
+.tl-yr{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.tl-t{font-size:18px;font-weight:800;letter-spacing:-0.3px;margin-bottom:6px}
+.tl-d{font-size:13px;color:var(--text2);line-height:1.7}
+.char-sec{position:relative;z-index:1;padding:80px 70px;text-align:center}
+.char-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;max-width:900px;margin:0 auto}
+.char-box{position:relative;padding:60px 44px;background:var(--bg2);border:1px solid var(--border);cursor:pointer;overflow:hidden;transition:all .4s}
+.char-box::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.char-name-dark{font-size:56px;font-weight:900;letter-spacing:-3px;margin-bottom:12px;color:var(--text)}
+.char-name-light{font-size:56px;font-weight:900;letter-spacing:-3px;margin-bottom:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.char-role{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:20px}
+.char-desc{font-size:13px;color:var(--text2);line-height:1.8;max-width:300px;margin:0 auto}
+.char-mood{margin-top:28px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);opacity:.6}
+.cta-sec{min-height:65vh;display:flex;align-items:center;justify-content:center;text-align:center;position:relative;padding:100px 70px;overflow:hidden}
+.cta-bg-word{position:absolute;font-size:clamp(100px,18vw,260px);font-weight:900;letter-spacing:-10px;color:var(--accent);opacity:.03;pointer-events:none;white-space:nowrap;user-select:none}
+.cta-inner{position:relative;z-index:1}
+.cta-h{font-size:clamp(40px,5vw,78px);font-weight:900;letter-spacing:-2.5px;line-height:1.05;margin-bottom:20px}
+.cta-h em{font-family:'Playfair Display',serif;font-style:italic;font-weight:400;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.cta-sub{font-size:16px;color:var(--text2);max-width:460px;margin:0 auto 40px;line-height:1.8}
+footer{position:relative;z-index:1;padding:44px 70px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.foot-logo{font-size:17px;font-weight:900;letter-spacing:-0.5px}
+.foot-copy{font-size:11px;color:var(--text2);letter-spacing:1px}
+.soc-row{display:flex;gap:12px}
+.soc-a{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text2);text-decoration:none;font-size:13px;font-weight:700;transition:all .3s}
+.soc-a:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-3px);box-shadow:0 6px 20px var(--glow)}
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .9s ease,transform .9s ease}
+.reveal.vis{opacity:1;transform:translateY(0)}
+.r1{transition-delay:.1s}.r2{transition-delay:.2s}.r3{transition-delay:.3s}
+.slide-in-left{opacity:0;transform:translateX(-60px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.slide-in-right{opacity:0;transform:translateX(60px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.slide-in-left.in,.slide-in-right.in{opacity:1;transform:translateX(0)}
+.scale-in{opacity:0;transform:scale(.92);transition:opacity .8s,transform .8s cubic-bezier(.16,1,.3,1)}
+.scale-in.in{opacity:1;transform:scale(1)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){
+  nav{padding:16px 24px}.nav-links{display:none}
+  .hero{grid-template-columns:1fr}.hero-left{padding:100px 24px 60px}.hero-right{height:55vh}
+  .about-sec,.course-sec,.services-sec,.timeline-sec,.char-sec{padding:70px 24px}
+  .about-grid,.course-inner{grid-template-columns:1fr}
+  .svc-grid{grid-template-columns:1fr}.tl-grid{grid-template-columns:1fr}.tl-line{display:none}
+  .char-grid{grid-template-columns:1fr}
+  footer{padding:30px 24px;flex-direction:column;gap:16px;text-align:center}
+}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div id="cDot"></div>
+<div id="cRing"></div>
+<canvas id="bg-canvas"></canvas>
+<div class="orb" style="width:280px;height:280px;top:5%;right:10%;background:radial-gradient(circle,var(--glow) 0%,transparent 70%);opacity:.35;animation-duration:8s"></div>
+<div class="orb" style="width:180px;height:180px;top:60%;left:3%;background:radial-gradient(circle,var(--glow) 0%,transparent 70%);opacity:.2;animation-duration:11s;animation-delay:-4s"></div>
+
+<nav id="mainNav">
+  <div class="nav-logo"><span class="logo-i">Islam</span><span class="logo-a">&</span><span class="logo-n">Nour</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#course">One Man Company</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#journey">Journey</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="mode-toggle" id="modeBtn">
+    <span class="mode-lbl" id="mLbl">ISLAM</span>
+    <div class="toggle-pill"></div>
+    <span id="mIcon" style="font-size:14px">🌙</span>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text" id="hEye">Strategic Advisor · Business Coach · AI Pioneer</span></div>
+    <div class="hero-brand"><span class="brand-big"><span class="brand-islam">Islam</span><span class="brand-amp">&</span><span class="brand-nour">Nour</span></span></div>
+    <p class="hero-tagline" id="hTag">Where <span>darkness</span> meets the light that clears it.</p>
+    <p class="hero-desc" id="hDesc">Helping businesses build strategy that converts into real competitive advantage — combining deep expertise with cutting-edge AI. Co-founder. Advisor. Perpetual builder.</p>
+    <div class="hero-ctas">
+      <a href="#contact" class="btn-gold" id="hBtn">Book a Strategy Call</a>
+      <a href="#course" class="btn-outline">One Man Company →</a>
+    </div>
+  </div>
+  <div class="hero-right" id="heroRight">
+    <img class="photo-dark" id="photoDark" src="https://res.cloudinary.com/dya2wijwb/image/upload/f_auto,q_auto/5886251189274348904_iczrbu" alt="Islam — Advisor"/>
+    <img class="photo-light" id="photoLight" src="https://res.cloudinary.com/dya2wijwb/image/upload/f_auto,q_auto/5886251189274348870_bktapr" alt="Islam — Coach"/>
+    <div class="hero-photo-mask"></div>
+    <div class="hero-glow"></div>
+  </div>
+  <div class="scroll-hint"><div class="scroll-line"></div><span class="scroll-txt">Scroll</span></div>
+</div>
+
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><div class="marquee-dot"></div>Strategic Advisory</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>AI Integration</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Executive Coaching</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>One Man Company</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Business Advisory</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Facilitation</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Leadership</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>NAG · El Roaya</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Strategic Advisory</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>AI Integration</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Executive Coaching</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>One Man Company</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Business Advisory</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Facilitation</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Leadership</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>NAG · El Roaya</div>
+  </div>
+</div>
+
+<section class="about-sec" id="about">
+  <div class="about-grid">
+    <div class="about-img-wrap slide-in-left">
+      <div class="about-img-frame">
+        <img id="aboutImg" src="https://res.cloudinary.com/dya2wijwb/image/upload/f_auto,q_auto/photo_5886251189274348903_y_gir8ng" alt="Islam Nour El-Din"/>
+        <div class="about-frame-border"></div>
+        <div class="about-badge" id="aboutBadge">Strategic Advisor · Cairo, Egypt</div>
+      </div>
+    </div>
+    <div class="slide-in-right">
+      <div class="sec-label">01 — About</div>
+      <h2 class="sec-title" id="aboutHeadline">Builder.<br>Strategist.<br><em>Architect.</em></h2>
+      <p class="about-body" id="aboutBody">Co-owner of <strong>Nour Advisory Group (NAG)</strong> and MBA candidate at <strong>GUC Cairo</strong> — specializing in bridging strategic consulting with technical business execution. The focus is on engineering scalable business models, validating ideas before capital hits the table, and transforming abstract visions into high-performing corporate structures through data-driven planning and strategic growth.<br><br>Currently researching why most businesses fail to convert AI into real competitive advantage — and building the answer.<br><br>Featured in <strong>NICHE Magazine</strong>. Honored by the President of <strong>Zewail City</strong>.</p>
+      <div class="stats-row">
+        <div class="stat-b reveal r1"><span class="stat-n" id="sn1">10+</span><span class="stat-l" id="sl1">Years Exp.</span></div>
+        <div class="stat-b reveal r2"><span class="stat-n" id="sn2">50+</span><span class="stat-l" id="sl2">Clients</span></div>
+        <div class="stat-b reveal r3"><span class="stat-n" id="sn3">3</span><span class="stat-l" id="sl3">Companies</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="course-sec" id="course">
+  <div class="course-inner">
+    <div class="reveal">
+      <div class="course-badge"><div class="badge-blink"></div>Now Enrolling</div>
+      <h2 class="course-title">One Man<br><em>Company</em></h2>
+      <p class="course-desc" id="omcDesc">The course that teaches non-technical entrepreneurs to run a full business operation solo using AI — learn, implement, and compete at scale without a team.</p>
+      <div class="course-features">
+        <div class="cf-item"><div class="cf-dot"></div><div><strong>AI Brain</strong> — Master Claude & AI tools for business thinking</div></div>
+        <div class="cf-item"><div class="cf-dot"></div><div><strong>AI Voice</strong> — Build your brand and content system</div></div>
+        <div class="cf-item"><div class="cf-dot"></div><div><strong>AI Presence</strong> — No-code website, built live</div></div>
+        <div class="cf-item"><div class="cf-dot"></div><div><strong>AI Office</strong> — Automate your operations</div></div>
+        <div class="cf-item"><div class="cf-dot"></div><div><strong>AI Sales Machine</strong> — Sell without a sales team</div></div>
+        <div class="cf-item"><div class="cf-dot"></div><div><strong>AI Finance Desk</strong> — Run your numbers intelligently</div></div>
+      </div>
+      <a href="mailto:islamnour204@gmail.com" class="btn-gold" style="margin-right:12px">Enroll Now →</a>
+      <a href="#contact" class="btn-outline">Learn More</a>
+    </div>
+    <div class="course-card-3d scale-in">
+      <div class="course-card" id="cCard">
+        <span class="cc-icon">⚡</span>
+        <div class="cc-title">One Man Company</div>
+        <div class="cc-sub">6 modules. Real businesses. Real AI. Zero team required.</div>
+        <div class="cc-modules">
+          <span class="mod-tag">AI Brain</span><span class="mod-tag">AI Voice</span><span class="mod-tag">AI Presence</span>
+          <span class="mod-tag">AI Office</span><span class="mod-tag">AI Sales</span><span class="mod-tag">AI Finance</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="services-sec" id="services">
+  <div class="svc-header reveal">
+    <div>
+      <div class="sec-label">02 — Services</div>
+      <h2 class="sec-title" id="svcT">What I<br><em>Deliver</em></h2>
+    </div>
+    <p style="max-width:280px;font-size:13px;color:var(--text2);line-height:1.8" id="svcS">For founders, executives, and entrepreneurs who need more than advice — they need results.</p>
+  </div>
+  <div class="svc-grid">
+    <div class="svc-card reveal"><div class="svc-num">01</div><span class="svc-icon" id="si1">🧠</span><div class="svc-t" id="st1">Strategic Advisory</div><div class="svc-d" id="sd1">Competitive strategy and business model design that creates durable advantage in fast-changing markets.</div></div>
+    <div class="svc-card reveal r1"><div class="svc-num">02</div><span class="svc-icon" id="si2">🤖</span><div class="svc-t" id="st2">AI Integration</div><div class="svc-d" id="sd2">Beyond hype — real AI systems that save time, reduce headcount dependency, and scale your operations.</div></div>
+    <div class="svc-card reveal r2"><div class="svc-num">03</div><span class="svc-icon" id="si3">📊</span><div class="svc-t" id="st3">Business Advisory</div><div class="svc-d" id="sd3">Legal, tax, and operational advisory through NAG — full-spectrum support for serious entrepreneurs.</div></div>
+    <div class="svc-card reveal r3"><div class="svc-num">04</div><span class="svc-icon" id="si4">🎯</span><div class="svc-t" id="st4">Executive Coaching</div><div class="svc-d" id="sd4">For leaders who need clarity, momentum, and accountability — not motivation, but transformation.</div></div>
+  </div>
+</section>
+
+<section class="timeline-sec" id="journey">
+  <div class="sec-label reveal">03 — Journey</div>
+  <h2 class="sec-title reveal" style="margin-bottom:0">Milestones that<br><em>Matter</em></h2>
+  <div class="tl-grid">
+    <div class="tl-col">
+      <div class="tl-item"><div class="tl-yr">Recognition</div><div class="tl-t">Honored by Zewail City</div><div class="tl-d">Recognized by the President of Zewail City for measurable coaching impact on emerging Egyptian leaders.</div></div>
+      <div class="tl-item"><div class="tl-yr">Media</div><div class="tl-t">NICHE Magazine Feature</div><div class="tl-d">Profiled as an entrepreneur shaping the business coaching landscape in Egypt and the region.</div></div>
+      <div class="tl-item"><div class="tl-yr">Enterprise</div><div class="tl-t">El Roaya Oil Refining</div><div class="tl-d">Co-founded an active oil refining operation — bridging industrial business with strategic management.</div></div>
+    </div>
+    <div class="tl-line"></div>
+    <div class="tl-col tl-col-r">
+      <div class="tl-item from-r"><div class="tl-yr">Advisory</div><div class="tl-t">Nour Advisory Group</div><div class="tl-d">Co-owner of NAG — legal, tax, and business advisory firm serving entrepreneurs across Cairo.</div></div>
+      <div class="tl-item from-r"><div class="tl-yr">Education</div><div class="tl-t">MBA · GUC Cairo</div><div class="tl-d">Final semesters. Research focus: AI strategy and sustainable competitive advantage.</div></div>
+      <div class="tl-item from-r"><div class="tl-yr">Now Building</div><div class="tl-t">One Man Company</div><div class="tl-d">A course teaching entrepreneurs to run full business operations solo using AI — from zero to scale.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="char-sec">
+  <div class="sec-label" style="justify-content:center;margin-bottom:12px">Meet Both Sides</div>
+  <h2 class="sec-title" style="margin-bottom:14px;text-align:center">One Person. <em>Two Powers.</em></h2>
+  <p style="font-size:14px;color:var(--text2);margin-bottom:48px;letter-spacing:.5px">Hover a character to step into that world.</p>
+  <div class="char-grid">
+    <div class="char-box" id="islamBox">
+      <div class="char-name-dark">Islam</div>
+      <div class="char-role">The Strategist · The Builder</div>
+      <p class="char-desc">The darkness before the dawn — where strategy is forged, businesses are built, and advantage is created.</p>
+      <div class="char-mood">🌙 Dark · Deep · Strategic</div>
+    </div>
+    <div class="char-box" id="nourBox">
+      <div class="char-name-light">Nour</div>
+      <div class="char-role">The Coach · The Light</div>
+      <p class="char-desc">The light that clears the darkness — where leaders are unlocked, potential is activated, and lives transform.</p>
+      <div class="char-mood">☀️ Light · Warm · Human</div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-sec" id="contact">
+  <div class="cta-bg-word" id="ctaBgWord">TOGETHER</div>
+  <div class="cta-inner reveal">
+    <div class="sec-label" style="justify-content:center;margin-bottom:20px">04 — Let's Connect</div>
+    <h2 class="cta-h">Ready to Build<br><em>Something Real?</em></h2>
+    <p class="cta-sub" id="ctaSub">Whether you need strategic clarity, AI implementation, or a business partner who's been in the trenches — or you're ready to become a One Man Company.</p>
+    <a href="mailto:islamnour204@gmail.com" class="btn-gold" style="font-size:12px;padding:16px 44px;letter-spacing:2.5px">GET IN TOUCH →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-logo"><span style="color:var(--text)">Islam</span><span style="color:var(--accent)">&</span><span style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Nour</span></div>
+  <div class="foot-copy">© 2026 Islam Nour El-Din · Cairo, Egypt</div>
+  <div class="soc-row">
+    <a class="soc-a" href="https://www.linkedin.com/in/islam-nour-286355138" target="_blank">in</a>
+    <a class="soc-a" href="https://www.instagram.com/islam.noureldin" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+    </a>
+    <a class="soc-a" href="https://www.facebook.com/share/18kZat1iP7/" target="_blank">f</a>
+    <a class="soc-a" href="mailto:islamnour204@gmail.com">✉</a>
+  </div>
+</footer>
+
+<script>
+// ── IMAGES ──────────────────────────────────────────────────
+var PH_DARK   = "https://res.cloudinary.com/dya2wijwb/image/upload/f_auto,q_auto/5886251189274348904_iczrbu";
+var PH_LIGHT  = "https://res.cloudinary.com/dya2wijwb/image/upload/f_auto,q_auto/5886251189274348870_bktapr";
+var AB_DARK   = "https://res.cloudinary.com/dya2wijwb/image/upload/f_auto,q_auto/photo_5886251189274348903_y_gir8ng";
+var AB_LIGHT  = "https://res.cloudinary.com/dya2wijwb/image/upload/f_auto,q_auto/5886251189274348870_bktapr";
+[PH_DARK, PH_LIGHT, AB_DARK, AB_LIGHT].forEach(function(s){var x=new Image();x.src=s;});
+
+// ── CANVAS ───────────────────────────────────────────────────
+var canvas = document.getElementById('bg-canvas');
+var ctx = canvas.getContext('2d');
+var W, H, nodes = [], isLight = false, mx = 0, my = 0;
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+resize(); window.addEventListener('resize',function(){resize();mkNodes();});
+function mkNodes(){nodes=[];var n=Math.floor(W*H/13000);for(var i=0;i<n;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.45,vy:(Math.random()-.5)*.45,r:Math.random()*1.4+.5});}
+mkNodes();
+document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;});
+function drawBg(){
+  ctx.clearRect(0,0,W,H);
+  var c1=isLight?'rgba(200,112,42,':'rgba(184,150,46,';
+  var c2=isLight?'rgba(232,160,69,':'rgba(232,201,109,';
+  nodes.forEach(function(n){n.x+=n.vx;n.y+=n.vy;if(n.x<0)n.x=W;if(n.x>W)n.x=0;if(n.y<0)n.y=H;if(n.y>H)n.y=0;});
+  for(var i=0;i<nodes.length;i++){
+    for(var j=i+1;j<nodes.length;j++){var dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<140){ctx.strokeStyle=c1+(1-d/140)*.13+')';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke();}}
+    var dx2=nodes[i].x-mx,dy2=nodes[i].y-my,d2=Math.sqrt(dx2*dx2+dy2*dy2);
+    if(d2<190){ctx.strokeStyle=c2+(1-d2/190)*.45+')';ctx.lineWidth=1.1;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(mx,my);ctx.stroke();}
+    ctx.beginPath();ctx.arc(nodes[i].x,nodes[i].y,nodes[i].r,0,Math.PI*2);ctx.fillStyle=c1+'.65)';ctx.fill();
+  }
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+// ── CURSOR ───────────────────────────────────────────────────
+var dot=document.getElementById('cDot'),ring=document.getElementById('cRing');
+document.addEventListener('mousemove',function(e){dot.style.left=e.clientX+'px';dot.style.top=e.clientY+'px';setTimeout(function(){ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px';},60);});
+document.querySelectorAll('a,button,.svc-card,.mode-toggle,.char-box').forEach(function(el){
+  el.addEventListener('mouseenter',function(){ring.style.width='48px';ring.style.height='48px';ring.style.opacity='.5';});
+  el.addEventListener('mouseleave',function(){ring.style.width='24px';ring.style.height='24px';ring.style.opacity='.8';});
+});
+
+// ── NAV SCROLL + PARALLAX ────────────────────────────────────
+var nav=document.getElementById('mainNav');
+window.addEventListener('scroll',function(){
+  var sy=window.scrollY;
+  nav.classList.toggle('scrolled',sy>50);
+  document.getElementById('progressBar').style.width=(sy/(document.body.scrollHeight-window.innerHeight)*100)+'%';
+  var hr=document.getElementById('heroRight');if(hr&&sy<window.innerHeight)hr.style.transform='translateY('+sy*.12+'px)';
+  var bg=document.getElementById('ctaBgWord');if(bg){var r=bg.parentElement.getBoundingClientRect();bg.style.transform='translateX('+r.top*.04+'px)';}
+});
+
+// ── CONTENT ──────────────────────────────────────────────────
+var darkC={
+  eye:'Strategic Advisor · Business Coach · AI Pioneer',
+  tag:'Where <span>darkness</span> meets the light that clears it.',
+  desc:'Helping businesses build strategy that converts into real competitive advantage — combining deep expertise with cutting-edge AI. Co-founder. Advisor. Perpetual builder.',
+  btn:'Book a Strategy Call',
+  omcDesc:'The course that teaches non-technical entrepreneurs to run a full business operation solo using AI — learn, implement, and compete at scale without a team.',
+  svcT:'What I<br><em>Deliver</em>',svcS:'For founders and executives who need more than advice — results.',
+  lbl:'ISLAM',icon:'🌙',ctaSub:"Whether you need strategic clarity, AI implementation, or a business partner who's been in the trenches — or you're ready to become a One Man Company.",
+  aboutHeadline:'Builder.<br>Strategist.<br><em>Architect.</em>',
+  aboutBody:'Co-owner of <strong>Nour Advisory Group (NAG)</strong> and MBA candidate at <strong>GUC Cairo</strong> — specializing in bridging strategic consulting with technical business execution. The focus is on engineering scalable business models, validating ideas before capital hits the table, and transforming abstract visions into high-performing corporate structures through data-driven planning and strategic growth.<br><br>Currently researching why most businesses fail to convert AI into real competitive advantage — and building the answer.<br><br>Featured in <strong>NICHE Magazine</strong>. Honored by the President of <strong>Zewail City</strong>.',
+  aboutBadge:'Strategic Advisor · Cairo, Egypt',
+  aboutImg:AB_DARK,
+  sn1:'10+',sl1:'Years Exp.',sn2:'50+',sl2:'Clients',sn3:'3',sl3:'Companies',
+  svcs:[
+    {i:'🧠',t:'Strategic Advisory',d:'Competitive strategy and business model design that creates durable advantage in fast-changing markets.'},
+    {i:'🤖',t:'AI Integration',d:'Beyond hype — real AI systems that save time, reduce headcount dependency, and scale your operations.'},
+    {i:'📊',t:'Business Advisory',d:'Legal, tax, and operational advisory through NAG — full-spectrum support for serious entrepreneurs.'},
+    {i:'🎯',t:'Executive Coaching',d:'For leaders who need clarity, momentum, and accountability — not motivation, but transformation.'}
+  ]
+};
+var lightC={
+  eye:'Executive Coach · Facilitator · Speaker',
+  tag:'Where the <span>light</span> inside you meets the world.',
+  desc:'Helping leaders unlock clarity, build momentum, and lead with intention. Through proven coaching frameworks and real facilitation — potential becomes performance.',
+  btn:'Start Your Journey',
+  omcDesc:"The course that empowers you to run your entire business solo using AI — even if you're not technical. Be the one who's ahead of the curve.",
+  svcT:'How I<br><em>Elevate</em>',svcS:'For leaders, entrepreneurs, and teams ready to operate at a higher level.',
+  lbl:'NOUR',icon:'☀️',ctaSub:"Let's have a real conversation about where you are, where you want to go, and how to close the gap — together.",
+  aboutHeadline:'Entrepreneur<br><em>who Trains!</em><br><span style="font-size:.72em;letter-spacing:3px;font-family:Inter,sans-serif;font-style:normal;font-weight:800">BE THE ONE.</span>',
+  aboutBody:'Certified Career Coach, Soft Skills Trainer, and Business Facilitator — applying behavioral psychology to engineer real transformation. Not content delivery — a full architecture of learning environments where technical precision meets human emotion, and every insight is <strong>lived, felt, and immediately applied.</strong><br><br>Working with frameworks like the Career Diamond model, EQ-i 2.0, Kolb\'s Experiential Cycle, and ATS-engineered personal branding — activating potential across leaders, teams, and emerging professionals.',
+  aboutBadge:'Executive Coach · Aspire To Inspire',
+  aboutImg:AB_LIGHT,
+  sn1:'5+',sl1:'Years Exp.',sn2:'500+',sl2:'Professionals Trained',sn3:'150+',sl3:'Coaching Hours',
+  svcs:[
+    {i:'🔥',t:'1-on-1 Executive Coaching',d:'Personalized sessions built around your goals — real transformation, not motivation.'},
+    {i:'🎤',t:'Facilitation & Workshops',d:'High-impact workshops that activate teams, align leaders, and turn insight into action.'},
+    {i:'🧭',t:'Leadership Programs',d:'Structured programs for emerging leaders built around real challenges, not theory.'},
+    {i:'⚡',t:'One Man Company Course',d:'Learn to run a full business operation solo using AI — for non-technical entrepreneurs.'}
+  ]
+};
+
+function setMode(light){
+  if(light===isLight)return;
+  isLight=light;
+  document.body.classList.toggle('light',light);
+  var c=light?lightC:darkC;
+  document.getElementById('hEye').textContent=c.eye;
+  document.getElementById('hTag').innerHTML=c.tag;
+  document.getElementById('hDesc').textContent=c.desc;
+  document.getElementById('hBtn').textContent=c.btn;
+  document.getElementById('omcDesc').textContent=c.omcDesc;
+  document.getElementById('svcT').innerHTML=c.svcT;
+  document.getElementById('svcS').textContent=c.svcS;
+  document.getElementById('mLbl').textContent=c.lbl;
+  document.getElementById('mIcon').textContent=c.icon;
+  document.getElementById('ctaSub').textContent=c.ctaSub;
+  document.getElementById('photoDark').style.opacity=light?'0':'1';
+  document.getElementById('photoLight').style.opacity=light?'1':'0';
+  document.getElementById('aboutHeadline').innerHTML=c.aboutHeadline;
+  document.getElementById('aboutBody').innerHTML=c.aboutBody;
+  document.getElementById('aboutBadge').textContent=c.aboutBadge;
+  document.getElementById('aboutImg').src=c.aboutImg;
+  document.getElementById('sn1').textContent=c.sn1; document.getElementById('sl1').textContent=c.sl1;
+  document.getElementById('sn2').textContent=c.sn2; document.getElementById('sl2').textContent=c.sl2;
+  document.getElementById('sn3').textContent=c.sn3; document.getElementById('sl3').textContent=c.sl3;
+  c.svcs.forEach(function(s,i){
+    var n=i+1;
+    document.getElementById('si'+n).textContent=s.i;
+    document.getElementById('st'+n).textContent=s.t;
+    document.getElementById('sd'+n).textContent=s.d;
+  });
+  updateBoxHighlight();
+}
+
+document.getElementById('modeBtn').addEventListener('click',function(){setMode(!isLight);});
+
+// ── CHARACTER BOX HOVER GIMMICK ──────────────────────────────
+var islamBox=document.getElementById('islamBox');
+var nourBox=document.getElementById('nourBox');
+islamBox.addEventListener('mouseenter',function(){setMode(false);});
+nourBox.addEventListener('mouseenter',function(){setMode(true);});
+function updateBoxHighlight(){
+  islamBox.style.boxShadow=!isLight?'0 0 40px var(--glow)':'none';
+  islamBox.style.borderColor=!isLight?'var(--accent)':'var(--border)';
+  nourBox.style.boxShadow=isLight?'0 0 40px var(--glow)':'none';
+  nourBox.style.borderColor=isLight?'var(--accent)':'var(--border)';
+}
+updateBoxHighlight();
+
+// ── COURSE CARD TILT ─────────────────────────────────────────
+var cCard=document.getElementById('cCard');
+if(cCard){
+  cCard.parentElement.addEventListener('mousemove',function(e){var r=cCard.getBoundingClientRect();var x=(e.clientX-r.left-r.width/2)/(r.width/2);var y=(e.clientY-r.top-r.height/2)/(r.height/2);cCard.style.animation='none';cCard.style.transform='perspective(700px) rotateY('+x*14+'deg) rotateX('+-y*10+'deg) translateZ(10px)';});
+  cCard.parentElement.addEventListener('mouseleave',function(){cCard.style.animation='floatCard 6s ease-in-out infinite';});
+}
+
+// ── SERVICE CARD TILT ────────────────────────────────────────
+document.querySelectorAll('.svc-card').forEach(function(card){
+  card.addEventListener('mousemove',function(e){var r=card.getBoundingClientRect();var x=(e.clientX-r.left-r.width/2)/(r.width/2);var y=(e.clientY-r.top-r.height/2)/(r.height/2);card.style.transform='perspective(500px) rotateY('+x*5+'deg) rotateX('+-y*4+'deg) translateZ(8px)';});
+  card.addEventListener('mouseleave',function(){card.style.transform='';});
+});
+
+// ── SCROLL REVEAL ────────────────────────────────────────────
+var ro=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('vis');});},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(function(el){ro.observe(el);});
+var slideObs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('in');});},{threshold:0.15});
+document.querySelectorAll('.slide-in-left,.slide-in-right,.scale-in').forEach(function(el){slideObs.observe(el);});
+var tlo=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('vis');});},{threshold:0.15});
+document.querySelectorAll('.tl-item').forEach(function(el){tlo.observe(el);});
+
+// ── COUNTER ANIMATION ────────────────────────────────────────
+function animCount(el,target,sfx){var start,dur=1600;(function tick(ts){if(!start)start=ts;var p=Math.min((ts-start)/dur,1);el.textContent=Math.floor((1-Math.pow(1-p,3))*target)+sfx;if(p<1)requestAnimationFrame(tick);})(performance.now());}
+var cntObs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting&&!e.target.dataset.done){e.target.dataset.done='1';var raw=e.target.textContent.trim();var num=parseFloat(raw);var sfx=raw.replace(/[\d.]/g,'');if(!isNaN(num))animCount(e.target,num,sfx);}});},{threshold:0.5});
+document.querySelectorAll('.stat-n').forEach(function(el){cntObs.observe(el);});
+
+ 
+</script>
+</body>
+</html>
